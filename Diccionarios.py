@@ -11,24 +11,36 @@ Generador de combinaciones para contraseñas.
 """)
 
 # Pedimos los datos al usuario
-nombre = input("Ingresa tu nombre: ")
-apellido = input("Ingresa tu apellido: ")
-fecha_nacimiento = input("Ingresa tu fecha de nacimiento (DD/MM/AAAA): ")
-mascota = input("Ingresa el nombre de tu mascota: ")
-ciudad = input("Ingresa tu ciudad de nacimiento: ")
+print("Ingresa los siguientes datos de la víctima")
+nombre = input("Ingresa su nombre: ")
+apellido = input("Ingresa su apellido: ")
 
-# Dividimos la fecha de nacimiento en día, mes y año
-dia, mes, anio = fecha_nacimiento.split("/")
+# Pregunta si se conoce la fecha completa o solo el año
+conoce_fecha_completa = input("¿Conoces la fecha completa de nacimiento (DD/MM/AAAA)? Responde 's' para sí o 'n' para solo el año: ").strip().lower()
+
+if conoce_fecha_completa == 's':
+    fecha_nacimiento = input("Ingresa su fecha de nacimiento (DD/MM/AAAA): ")
+    dia, mes, anio = fecha_nacimiento.split("/")
+else:
+    anio = input("Ingresa el año de nacimiento (AAAA): ")
+    dia = ""
+    mes = ""
+
+mascota = input("Ingresa el nombre de su mascota: ")
+ciudad = input("Ingresa su ciudad de nacimiento: ")
 
 # Creamos una lista con los datos proporcionados
 datos = [nombre, apellido, dia, mes, anio, mascota, ciudad]
 
-# Generamos combinaciones posibles de dos, tres y cuatro elementos
+# Filtramos para eliminar elementos vacíos
+datos = [dato for dato in datos if dato]
+
+# Generamos combinaciones posibles de tres y cuatro elementos
 combinaciones = []
-for i in range(2, len(datos) + 1):
+for i in range(3, len(datos) + 1):
     combinaciones.extend([''.join(combo) for combo in permutations(datos, i)])
 
-# Añadimos variantes comunes y patrones típicos, incluyendo nombre+mascota+anio
+# Añadimos variantes comunes y patrones típicos
 variantes = [
     nombre + anio,
     apellido + anio,
@@ -55,9 +67,11 @@ variantes = [
     nombre.capitalize() + anio[-2:],       # Capitalizado y últimos 2 del año
     mascota.capitalize() + anio[-2:],
     dia + mes + anio,                      # Fecha completa sin separadores
-    dia + "_" + mes + "_" + anio,          # Fecha con separadores
+    dia + "_" + mes + "_" + anio           # Fecha con separadores
+]
 
-    # Combinaciones específicas de nombre + mascota + año, mes o día
+# Combinaciones específicas de nombre + mascota + año, mes o día
+variantes += [
     nombre + mascota + anio,
     nombre + mascota + dia,
     nombre + mascota + mes,
@@ -88,3 +102,6 @@ with open("posibles_contrasenas.txt", "w") as file:
         file.write(pw + "\n")
 
 print("Las posibles contraseñas se han guardado en 'posibles_contrasenas.txt'")
+
+# Espera a que el usuario presione Enter antes de cerrar
+input("Presiona Enter para salir...")
